@@ -1,0 +1,156 @@
+#include "../../include/TCMalloc/ThreadCache.h"
+#include"../../include/TCMalloc/CentralCache.h"
+#include "../../include/TCMalloc/TCMallocutils.h"
+#include "../../include/TCMalloc/TCMallocBootstrap.h"
+#include "../../include/list.h"
+#include "../../include/set.h"
+#include "../../include/unordered_map.h"
+#include <assert.h>
+namespace mystl
+{
+	class ThreadCacheImpl
+	{
+	public:
+		// 将原有的私有数据成员移到这里
+		list<span<byte>> m_free_cache[size_utils::CACHE_LINE_SIZE];
+		size_t m_next_allocate_count[size_utils::CACHE_LINE_SIZE];
+	};
+
+	thread_cache::thread_cache() : pimpl(nullptr)
+	{
+		g_is_allocator_constructing = true;
+		// 初始化数组
+		pimpl = new ThreadCacheImpl();
+
+		for (size_t i = 0; i < size_utils::CACHE_LINE_SIZE; ++i)
+		{
+			pimpl->m_next_allocate_count[i] = 1;
+		}
+
+		g_is_allocator_constructing = false;
+	}
+
+	thread_cache::~thread_cache()
+	{
+		delete pimpl;
+	}
+
+	std::optional<void*> thread_cache::allocate(size_t memory_size)
+	{
+		if (memory_size == 0)
+		{
+			return std::nullopt;
+		}
+
+		//对齐到8字节
+		memory_size = size_utils::align(memory_size);
+
+		if (memory_size > size_utils::MAX_CACHED_UNIT_SIZE) {
+			auto result = allocate_from_central_cache(memory_size);
+			if (result) {
+				return std::optional<void*>(result->data());
+			}
+			else {
+				return std::nullopt; 
+			}
+		}
+
+		const size_t index = size_utils::get_index(memory_size);
+		if (!pimpl->m_free_cache[index].empty())
+		{
+			auto result = pimpl->m_free_cache[index].front();
+			pimpl->m_free_cache[index].pop_front();
+			assert(result.size() == memory_size);
+			return result.data();
+		}
+		auto result = allocate_from_central_cache(memory_size);
+		if (result) {
+			return std::optional<void*>(result->data());
+		}
+		else {
+			return std::nullopt;
+		}
+	}
+
+	void thread_cache::deallocate(void* start_p, size_t memory_size)
+	{
+		if (memory_size == 0) {
+			return;
+		}
+		memory_size = size_utils::align(memory_size);
+		span<byte> memory(static_cast<byte*>(start_p), memory_size);
+		// 如果大于了最大缓存值了，说明是直接从中心缓存区申请的，可以直接返还给中心缓存区
+		if (memory_size > size_utils::MAX_CACHED_UNIT_SIZE) {
+			list<span<byte>> free_list;
+			free_list.push_back(memory);
+			central_cache::get_instance().deallocate(std::move(free_list));
+			return;
+		}
+		const size_t index = size_utils::get_index(memory_size);
+		pimpl->m_free_cache[index].push_front(memory);
+
+		// 检测一下需不需要回收
+		// 如果当前的列表所维护的大小已经超过了阈值，则触发资源回收
+		// 维护的大小 = 个数 × 单个空间的大小
+		if (pimpl->m_free_cache[index].size() * memory_size > MAX_FREE_BYTES_PER_LISTS) {
+			// 如果超过了，则回收一半的多余的内存块
+			size_t deallocate_block_size = pimpl->m_free_cache[index].size() / 2;
+			list<span<byte>> memory_to_deallocate;
+			auto middle = pimpl->m_free_cache[index].begin();
+			advance(middle, deallocate_block_size);
+			memory_to_deallocate.splice(memory_to_deallocate.begin(), pimpl->m_free_cache[index], middle, pimpl->m_free_cache[index].end());
+			central_cache::get_instance().deallocate(std::move(memory_to_deallocate));
+			// 在回收工作完成以后，还要调整这个空间大小的申请的个数
+			// 减半下一次申请的个数
+			pimpl->m_next_allocate_count[index] /= 2;
+		}
+	}
+
+	std::optional<span<byte>> thread_cache::allocate_from_central_cache(size_t memory_size) {
+		size_t block_count = compute_allocate_count(memory_size);
+		auto allocation_result = central_cache::get_instance().allocate(memory_size, block_count);
+		if (allocation_result)
+		{
+			auto memory_list = move(allocation_result.value());
+
+			span<byte> result = memory_list.front();
+			assert(result.size() == memory_size);
+			memory_list.pop_front();
+			const size_t index = size_utils::get_index(memory_size);
+
+			pimpl->m_free_cache[index].splice(pimpl->m_free_cache[index].end(), memory_list);
+
+			return result;
+		}
+		else
+		{
+			return std::nullopt;
+		}
+	}
+
+	size_t thread_cache::compute_allocate_count(size_t memory_size) {
+		// 获取其下标
+		size_t index = size_utils::get_index(memory_size);
+
+		if (index >= size_utils::CACHE_LINE_SIZE) {
+			return 1;
+		}
+
+		// 最少申请4个块
+		size_t result = std::max(pimpl->m_next_allocate_count[index], static_cast<size_t>(4));
+
+
+		// 计算下一次要申请的个数，默认乘2
+		size_t next_allocate_count = result * 2;
+		// 要确保不会超过center_cache一次申请的最大个数
+		next_allocate_count = std::min(next_allocate_count, page_span::MAX_UNIT_COUNT);
+		// 同时也要确保不会超过一个列表维护的最大容量
+		// 比如16KB的内存块，不能一次性申请128个吧
+		// 256 * 1024 B / 16 * 1024 B / 2 = 8个（这里就将16KB的内存一次性最多申请8个，要给点冗余(除2)，不然可能会反复申请）
+		next_allocate_count = std::min(next_allocate_count, MAX_FREE_BYTES_PER_LISTS / memory_size / 2);
+		// 更新下一次要申请的个数
+		pimpl->m_next_allocate_count[index] = next_allocate_count;
+		// 返回这一次申请的个数
+		return result;
+	}
+}

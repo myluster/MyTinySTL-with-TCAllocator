@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{93f7bac8-3cf0-4a55-ba59-a0af3b18e177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{8ffbe7b4-392c-49a3-b04c-3fd1cbfde8e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\myTCMalloc">
+      <UniqueIdentifier>{03b58d1e-62ba-42fc-b602-4ae146918886}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{b2e2af2b-3a12-4f5c-8072-5f85418b934a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\myTCMalloc">
+      <UniqueIdentifier>{73fe5e1f-552b-4fe2-a13e-321358a9f7bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SimplememoryPool.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="test\SimpleMemoryPool_test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HashBucketMemoryPool.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="test\HashBucketMemoryPool_test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MutexMemoryPool.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="test\MutexMemoryPool_test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LockFreeMemoryPool.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="test\LockFreeMemoryPool_test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TCMalloc\TCMallocutils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TCMalloc\PageCache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TCMalloc\CentralCache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TCMalloc\ThreadCache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test\TCMalloc_test.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\HashBucketMemoryPool\SimpleMemoryPool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HashBucketMemoryPool\HashBucketMemoryPool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HashBucketMemoryPool\MutexMemoryPool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HashBucketMemoryPool\LockFreeMemoryPool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\type_traits.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\allocator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\construct.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\iterator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\span.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\algo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\algobase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TCMalloc\TCMallocutils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bitset.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\byte.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TCMalloc\PageCache.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\exceptdef.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\memory.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uninitialized.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="test\vector_test.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rb_tree.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hashtable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\functional.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\map.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="test\map_test.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\set.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="test\set_test.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TCMalloc\CentralCache.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\list.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="test\list_test.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TCMalloc\ThreadCache.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\unordered_map.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="test\unordered_map_test.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TCMalloc\TCMallocBootstrap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TCMalloc\memory_allocator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
